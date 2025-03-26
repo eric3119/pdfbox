@@ -162,11 +162,7 @@ public class MockHttpServer extends Thread {
     }
 
     private synchronized void waitForServerToStart() {
-        try {
-            wait(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        wait(5000);
     }
 
     private synchronized void waitForServerToStop() {
