@@ -28,10 +28,12 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import org.apache.logging.log4j.Logger;
+
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.filter.DecodeOptions;
@@ -194,33 +196,26 @@ final class SampledImageReader
             throw new IOException("image width and height must be positive");
         }
 
-        try
+        if (bitsPerComponent == 1 && colorKey == null && numComponents == 1)
         {
-            if (bitsPerComponent == 1 && colorKey == null && numComponents == 1)
-            {
-                return from1Bit(pdImage, clipped, subsampling, width, height);
-            }
+            return from1Bit(pdImage, clipped, subsampling, width, height);
+        }
 
-            // An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
-            // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
-            // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
-            // in PDColorSpace#toRGBImage expects an 8-bit range, i.e. 0-255.
-            // Interleaved raster allows chunk-copying for 8-bit images.
-            WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
-                    numComponents, new Point(0, 0));
-            final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
-            final float[] decode = getDecodeArray(pdImage);
-            if (bitsPerComponent == 8 && colorKey == null && Arrays.equals(decode, defaultDecode))
-            {
-                // convert image, faster path for non-decoded, non-colormasked 8-bit images
-                return from8bit(pdImage, raster, clipped, subsampling, width, height);
-            }
-            return fromAny(pdImage, raster, colorKey, clipped, subsampling, width, height);
-        }
-        catch (NegativeArraySizeException | IllegalArgumentException ex)
+        // An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
+        // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
+        // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
+        // in PDColorSpace#toRGBImage expects an 8-bit range, i.e. 0-255.
+        // Interleaved raster allows chunk-copying for 8-bit images.
+        WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
+                numComponents, new Point(0, 0));
+        final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
+        final float[] decode = getDecodeArray(pdImage);
+        if (bitsPerComponent == 8 && colorKey == null && Arrays.equals(decode, defaultDecode))
         {
-            throw new IOException(ex);
+            // convert image, faster path for non-decoded, non-colormasked 8-bit images
+            return from8bit(pdImage, raster, clipped, subsampling, width, height);
         }
+        return fromAny(pdImage, raster, colorKey, clipped, subsampling, width, height);
     }
 
     /**
