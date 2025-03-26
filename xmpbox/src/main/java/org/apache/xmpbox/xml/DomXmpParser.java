@@ -115,16 +115,9 @@ public class DomXmpParser
     public XMPMetadata parse(InputStream input) throws XmpParsingException
     {
         Document document = null;
-        try
-        {
-            // prevents validation messages polluting the console
-            dBuilder.setErrorHandler(null);
-            document = dBuilder.parse(input);
-        }
-        catch (SAXException | IOException e)
-        {
-            throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
-        }
+        // prevents validation messages polluting the console
+        dBuilder.setErrorHandler(null);
+        document = dBuilder.parse(input);
 
         XMPMetadata xmp = null;
 
