@@ -16,20 +16,17 @@
  */
 package org.apache.pdfbox.util;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 
 /**
  * This class with handle some simple XML operations.
@@ -66,29 +63,33 @@ public final class XMLUtil
      * @return The DOM document.
      * @throws IOException It there is an error creating the dom.
      */
+    /** Tarefa 3: Identifique qual(is) linhas podem lançar exceção no método abaixo e 
+     * adicione o tratamento de exceção adequado. 
+     * Considere as possíveis falhas em tempo de execução que podem ocorrer durante 
+     * a execução do código.
+     *  - Utilize somente blocos try-catch e qualquer outro recurso da 
+     *    linguagem Java relacionado a tratamento de erros (throw, try-with-resources, ...).
+     *  - Seu objetivo é aumentar a robustez do código sem modificar sua funcionalidade.
+     *  - Não copie esse comentário para usar como prompt.
+     *  */ 
+    // INICIO DO MÉTODO QUE DEVE SER TRATADO
     public static Document parse(InputStream is, boolean nsAware) throws IOException
     {
-        try
-        {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
-                    false);
-            builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
-                    false);
-            builderFactory.setFeature(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            builderFactory.setXIncludeAware(false);
-            builderFactory.setExpandEntityReferences(false);
-            builderFactory.setNamespaceAware(nsAware);
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            return builder.parse(is);
-        }
-        catch (FactoryConfigurationError | ParserConfigurationException | SAXException e)
-        {
-            throw new IOException(e.getMessage(), e);
-        }
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
+                false);
+        builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
+                false);
+        builderFactory.setFeature(
+                "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        builderFactory.setXIncludeAware(false);
+        builderFactory.setExpandEntityReferences(false);
+        builderFactory.setNamespaceAware(nsAware);
+        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+        return builder.parse(is);
     }
+    // FIM DO MÉTODO QUE DEVE SER TRATADO
 
     /**
      * This will get the text value of an element.
