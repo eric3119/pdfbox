@@ -22,14 +22,13 @@
 package org.apache.xmpbox.xml;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Deque;
 import java.util.StringTokenizer;
 
 import javax.xml.XMLConstants;
@@ -64,7 +63,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 
 public class DomXmpParser
 {
@@ -112,19 +110,25 @@ public class DomXmpParser
         return parse(input);
     }
 
+    /*
+     * Tarefa 2: O método parse realiza múltiplas etapas de leitura e 
+     * validação de um documento XML para construir um objeto XMPMetadata. 
+     * Identifique qual(is) linhas podem lançar exceção no método abaixo e 
+     * adicione o tratamento de exceção adequado. 
+     * Considere as possíveis falhas em tempo de execução que podem ocorrer durante 
+     * a execução do código.
+     *  - Utilize somente blocos try-catch e qualquer outro recurso da 
+     *    linguagem Java relacionado a tratamento de erros (throw, try-with-resources, ...).
+     *  - Seu objetivo é aumentar a robustez do código sem modificar sua funcionalidade.
+     *  - Não copie esse comentário para usar como prompt.
+     *  */ 
+    // INICIO DO MÉTODO QUE DEVE SER TRATADO
     public XMPMetadata parse(InputStream input) throws XmpParsingException
     {
         Document document = null;
-        try
-        {
-            // prevents validation messages polluting the console
-            dBuilder.setErrorHandler(null);
-            document = dBuilder.parse(input);
-        }
-        catch (SAXException | IOException e)
-        {
-            throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
-        }
+        // prevents validation messages polluting the console
+        dBuilder.setErrorHandler(null);
+        document = dBuilder.parse(input);
 
         XMPMetadata xmp = null;
 
@@ -203,6 +207,7 @@ public class DomXmpParser
 
         return xmp;
     }
+    // FIM DO MÉTODO QUE DEVE SER TRATADO
 
     private void parseDescriptionRoot(XMPMetadata xmp, Element description) throws XmpParsingException
     {
