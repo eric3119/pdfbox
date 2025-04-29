@@ -80,77 +80,27 @@ public class EmbeddedMultipleFonts
         }
     }
 
+    /**
+     * Tarefa 1: O método showTextMultiple trabalha com uma lista de 
+     * fontes para renderizar texto em um documento PDF. 
+     * Identifique qual(is) linhas podem lançar exceção no método abaixo e 
+     * adicione o tratamento de exceção adequado. 
+     * Considere as possíveis falhas em tempo de execução que podem ocorrer durante 
+     * a execução do código.
+     *  - Utilize somente blocos try-catch e qualquer outro recurso da 
+     *    linguagem Java relacionado a tratamento de erros (throw, try-with-resources, ...).
+     *  - Seu objetivo é aumentar a robustez do código sem modificar sua funcionalidade.
+     *  - Não copie esse comentário para usar como prompt.
+     *  */ 
+    // INICIO DO MÉTODO QUE DEVE SER TRATADO
     static void showTextMultiple(PDPageContentStream cs, String text, List<PDFont> fonts, float size)
             throws IOException
     {
-        try
-        {
-            // first try all at once
-            fonts.get(0).encode(text);
-            cs.setFont(fonts.get(0), size);
-            cs.showText(text);
-            return;
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // do nothing
-        }
-        // now try separately
-        int i = 0;
-        while (i < text.length())
-        {
-            boolean found = false;
-            for (PDFont font : fonts)
-            {
-                try
-                {
-                    String s = text.substring(i, i + 1);
-                    font.encode(s);
-                    // it works! Try more with this font
-                    int j = i + 1;
-                    for (; j < text.length(); ++j)
-                    {
-                        String s2 = text.substring(j, j + 1);
-
-                        if (isWinAnsiEncoding(s2.codePointAt(0)) && font != fonts.get(0))
-                        {
-                            // Without this segment, the example would have a flaw:
-                            // This code tries to keep the current font, so
-                            // the second "abc" would appear in a different font
-                            // than the first one, which would be weird.
-                            // This segment assumes that the first font has WinAnsiEncoding.
-                            // (all static PDType1Font Times / Helvetica / Courier fonts)
-                            break;
-                        }
-                        try
-                        {
-                            font.encode(s2);
-                        }
-                        catch (IllegalArgumentException ex)
-                        {
-                            // it's over
-                            break;
-                        }
-                    }
-                    s = text.substring(i, j);
-                    cs.setFont(font, size);
-                    cs.showText(s);
-                    i = j;
-                    found = true;
-                    break;
-                }
-                catch (IllegalArgumentException ex)
-                {
-                    // didn't work, will try next font
-                }
-            }
-            if (!found)
-            {
-                throw new IllegalArgumentException("Could not show '" + text.charAt(i)
-                        + "' with the fonts provided");
-            }
-        }
+        fonts.get(0).encode(text);
+        cs.setFont(fonts.get(0), size);
+        cs.showText(text);
     }
+    // FIM DO MÉTODO QUE DEVE SER TRATADO
 
     static boolean isWinAnsiEncoding(int unicode)
     {
